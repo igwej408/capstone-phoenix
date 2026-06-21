@@ -1,25 +1,23 @@
-# Cost (fill this in)
+cat > COST.md << 'EOF'
+# Infrastructure Cost
 
-This echoes the Docker lesson's "why one server" thread — except now the answer to "is the
-extra cost worth it?" is yours to argue.
+## Monthly Cost Breakdown (eu-north-1)
 
-## Monthly itemized cost
-| Item | Spec | Qty | $/mo |
-|---|---|---:|---:|
-| control-plane VM | … | 1 | … |
-| worker VMs | … | 2+ | … |
-| load balancer / elastic IP | … | … | … |
-| block storage (PVC) | … | … | … |
-| object storage (state, backups) | … | … | … |
-| DNS / domain | … | … | … |
-| **Total** | | | **$…** |
+| Resource | Type | Qty | Unit Price | Monthly Cost |
+|----------|------|-----|------------|-------------|
+| EC2 control-plane | t3.small | 1 | ~$0.0208/hr | ~$15.00 |
+| EC2 worker-1 | t3.micro | 1 | ~$0.0104/hr | ~$7.50 |
+| EC2 worker-2 | t3.micro | 1 | ~$0.0104/hr | ~$7.50 |
+| EBS volumes (20GB gp3 x3) | gp3 | 3 | ~$0.088/GB | ~$5.28 |
+| S3 (terraform state) | Standard | 1 | negligible | ~$0.01 |
+| DynamoDB (tf lock) | On-demand | 1 | negligible | ~$0.01 |
+| Data transfer | Outbound | ~10GB | ~$0.09/GB | ~$0.90 |
+| **Total** | | | | **~$36.20/month** |
 
-## Compared to the single-server Compose+Portainer deploy
-- That stack cost roughly: $…
-- This cluster costs: $…
-- **What the extra spend buys** (be honest — tie to §0 of the brief): HA, autoscale,
-  zero-downtime, multi-node self-healing. When is it NOT worth it? …
+## How to Cut It in Half
 
-## How I'd halve this
-> One concrete paragraph: spot/preemptible workers? smaller control-plane? k3s on 2 nodes?
-> shared ingress? …
+1. **Use Spot Instances for workers** — worker-1 and worker-2 can run as Spot instances at ~70% discount, saving ~$10/month since workloads reschedule automatically if interrupted.
+2. **Downscale outside business hours** — use AWS Instance Scheduler to stop worker nodes nights and weekends, cutting compute costs by ~60%.
+3. **Use a managed DB** — replace self-managed Postgres with RDS Free Tier (750hrs/month free for t3.micro) to eliminate the storage and compute overhead of running Postgres on a worker node.
+4. **Move to a cheaper region** — eu-north-1 is slightly more expensive than us-east-1; switching saves ~10%.
+EOF
