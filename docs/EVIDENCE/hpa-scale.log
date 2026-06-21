@@ -1,0 +1,5 @@
+joseph@Joe:~/capstone-phoenix$ kubectl get hpa -n taskapp -w
+NAME                  REFERENCE                    TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+taskapp-backend-hpa   Deployment/taskapp-backend   cpu: 1%/50%   2         5         2          43m
+taskapp-backend-hpa   Deployment/taskapp-backend   cpu: 44%/50%   2         5         2          43m
+taskapp-backend-hpa   Deployment/taskapp-backend   cpu: 1%/50%    2         5         2          43m

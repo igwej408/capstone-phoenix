@@ -1,0 +1,19 @@
+joseph@Joe:~/capstone-phoenix$ kubectl get pods -n taskapp | grep postgres
+postgres-0                          1/1     Running     0             165m
+joseph@Joe:~/capstone-phoenix$ kubectl delete pod postgres-0 -n taskapp
+pod "postgres-0" deleted from taskapp namespace
+joseph@Joe:~/capstone-phoenix$ kubectl get pods -n taskapp -w
+NAME                                READY   STATUS      RESTARTS      AGE
+postgres-0                          1/1     Running     0             12s
+taskapp-backend-8449b59958-95bdb    1/1     Running     0             26m
+taskapp-backend-8449b59958-tbz5r    1/1     Running     0             26m
+taskapp-frontend-79798b4c89-dv6ds   1/1     Running     9 (91m ago)   149m
+taskapp-frontend-79798b4c89-qrcfq   1/1     Running     0             149m
+taskapp-migration-wmzf6             0/1     Completed   0             152m
+joseph@Joe:~/capstone-phoenix$ curl -I https://josephigwe.duckdns.org/api/healthth
+HTTP/2 200 
+date: Sun, 21 Jun 2026 21:07:48 GMT
+content-type: application/json
+content-length: 85
+access-control-allow-origin: *
+strict-transport-security: max-age=31536000; includeSubDomains

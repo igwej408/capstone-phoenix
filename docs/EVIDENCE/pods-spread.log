@@ -1,0 +1,8 @@
+joseph@Joe:~/capstone-phoenix$ kubectl get pods -n taskapp -o wide
+NAME                                READY   STATUS      RESTARTS     AGE    IP           NODE            NOMINATED NODE   READINESS GATES
+postgres-0                          1/1     Running     0     158m   10.42.1.3    ip-10-0-1-126   <none>           <none>
+taskapp-backend-8449b59958-95bdb    1/1     Running     0     19m    10.42.0.38   ip-10-0-1-136   <none>           <none>
+taskapp-backend-8449b59958-tbz5r    1/1     Running     0     19m    10.42.2.13   ip-10-0-1-227   <none>           <none>
+taskapp-frontend-79798b4c89-dv6ds   1/1     Running     9 (83m ago)   141m   10.42.0.30   ip-10-0-1-136   <none>           <none>
+taskapp-frontend-79798b4c89-qrcfq   1/1     Running     0     142m   10.42.2.5    ip-10-0-1-227   <none>           <none>
+taskapp-migration-wmzf6             0/1     Completed   0     145m   10.42.2.4    ip-10-0-1-227   <none>           <none>

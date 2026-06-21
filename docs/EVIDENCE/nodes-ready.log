@@ -1,0 +1,5 @@
+joseph@Joe:~/capstone-phoenix$ kubectl get nodes
+NAME            STATUS   ROLES           AGE     VERSION
+ip-10-0-1-126   Ready    <none>          5h43m   v1.35.5+k3s1
+ip-10-0-1-136   Ready    control-plane   5h48m   v1.35.5+k3s1
+ip-10-0-1-227   Ready    <none>          3h57m   v1.35.5+k3s1
