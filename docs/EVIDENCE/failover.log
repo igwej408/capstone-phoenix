@@ -1,0 +1,24 @@
+joseph@Joe:~/capstone-phoenix$ kubectl get nodes
+kubectl get pods -n taskapp -o wide
+curl -I https://josephigwe.duckdns.org
+NAME            STATUS   ROLES           AGE     VERSION
+ip-10-0-1-126   Ready    <none>          6h56m   v1.35.5+k3s1
+ip-10-0-1-136   Ready    control-plane   7h      v1.35.5+k3s1
+ip-10-0-1-227   Ready    <none>          5h9m    v1.35.5+k3s1
+NAME                                READY   STATUS    RESTARTS       AGE     IP           NODE            NOMINATED NODE   READINESS GATES
+postgres-0                          1/1     Running   0              28m     10.42.1.18   ip-10-0-1-126   <none>           <none>
+taskapp-backend-557cf4dd5f-m6w2n    1/1     Running   1 (19m ago)    19m     10.42.0.43   ip-10-0-1-136   <none>           <none>
+taskapp-backend-557cf4dd5f-ptvjv    1/1     Running   0              4m31s   10.42.1.26   ip-10-0-1-126   <none>           <none>
+taskapp-frontend-79798b4c89-dv6ds   1/1     Running   9 (155m ago)   3h33m   10.42.0.30   ip-10-0-1-136   <none>           <none>
+taskapp-frontend-79798b4c89-wwg67   1/1     Running   0              4m31s   10.42.1.25   ip-10-0-1-126   <none>           <none>
+HTTP/2 200 
+date: Sun, 21 Jun 2026 22:11:06 GMT
+content-type: text/html
+content-length: 608
+last-modified: Wed, 10 Jun 2026 18:54:55 GMT
+etag: "6a29b2ff-260"
+expires: Sun, 21 Jun 2026 22:11:05 GMT
+cache-control: no-cache
+cache-control: no-cache
+accept-ranges: bytes
+strict-transport-security: max-age=31536000; includeSubDomains
