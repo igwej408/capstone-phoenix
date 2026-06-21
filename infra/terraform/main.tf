@@ -106,17 +106,17 @@ resource "aws_security_group" "nodes" {
 # --- COMPUTE: 1 control plane + 2 workers ---
 locals {
   nodes = {
-    "control-plane" = { role = "server" }
-    "worker-1"      = { role = "agent" }
-    "worker-2"      = { role = "agent" }
+    "control-plane" = { role = "server", instance_type = "t3.small" }
+    "worker-1"      = { role = "agent", instance_type = "t3.micro" }
+    "worker-2"      = { role = "agent", instance_type = "t3.micro" }
   }
+  
 }
-
 resource "aws_instance" "nodes" {
   for_each = local.nodes
 
   ami                    = var.ami_id
-  instance_type          = var.instance_type
+  instance_type          = each.value.instance_type
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.nodes.id]
   key_name               = var.key_name
