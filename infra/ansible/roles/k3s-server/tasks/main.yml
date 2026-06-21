@@ -22,7 +22,7 @@
     src: /var/lib/rancher/k3s/server/node-token
   register: node_token
 
-- name: Store token as fact
+- name: Store token as fact for workers
   set_fact:
     k3s_token: "{{ node_token.content | b64decode | trim }}"
   delegate_to: "{{ item }}"
