@@ -5,43 +5,73 @@
 > tier runs, the ingress controller, and the request path.
 
 ```
-[ replace with your diagram ]
+Internet
 
-  Internet ──DNS──▶ taskapp.<you>.dev / api.<you>.dev
-        │
-        ▼
-  ingress controller (node: ____)  ──TLS terminated by cert-manager──┐
-        │                                                            │
-        ▼                                                            ▼
-  frontend Service ──▶ frontend Pods (nodes: __, __)        backend Service ──▶ backend Pods (nodes: __, __)
-                              │  /api proxy                              │
-                              └────────────────────────────────────────▶│
-                                                                         ▼
-                                                          postgres Service ──▶ postgres-0 (PVC on node __)
-```
+│
 
-## 2. Node & network
-- Nodes (role, size, AZ/region): …
-- CIDR / subnet choices and why: …
-- Firewall: what's open to the world, what's internal, and why `6443` is closed: …
+▼
 
-## 3. Request flow (one paragraph)
-> DNS → ingress → TLS → frontend → /api → backend → Postgres. Be specific about names/ports.
+Route53/DuckDNS (josephigwe.duckdns.org → 13.61.1.134)
 
-## 4. The single-server assumptions you fixed  ← graders look here
-> For each, name the assumption that was safe on one box but breaks on a cluster, and the
-> K8s mechanism you used. Minimum: migrations, persistent storage, traffic routing,
-> self-healing, zero-downtime deploys, secrets.
+│
 
-| Single-server assumption | Why it breaks at scale | How you fixed it |
-|---|---|---|
-| migrate-on-boot in the entrypoint | 2+ replicas race on `alembic upgrade head` | … |
-| named volume on the host | Pods reschedule across nodes | … |
-| `ports:` published on the host | many Pods, many nodes, one front door needed | … |
-| … | … | … |
+▼
 
-## 5. Choices & trade-offs
-- Raw YAML vs Helm vs kustomize — why: …
-- ingress-nginx vs k3s Traefik — why: …
-- CNI / NetworkPolicy enforcement — what and why: …
-- Secrets approach (out-of-band vs Sealed/External Secrets) — why: …
+AWS Security Group (ports 80, 443 open; 22 & 6443 to my IP only)
+
+│
+
+▼
+
+control-plane (t3.small) 13.61.1.134 / 10.0.1.136
+
+├── k3s server
+
+├── ingress-nginx controller
+
+├── cert-manager
+
+└── Argo CD
+
+│
+
+├── worker-1 (t3.micro) 16.171.232.44 / 10.0.1.126
+
+│   ├── postgres-0
+
+│   └── taskapp-backend replica
+
+│
+
+└── worker-2 (t3.micro) 51.20.69.158 / 10.0.1.227
+
+├── taskapp-backend replica
+
+└── taskapp-frontend replicas
+
+## How a Request Flows
+
+1. User opens https://josephigwe.duckdns.org
+2. DNS resolves to control-plane public IP (13.61.1.134)
+3. nginx ingress controller receives the request on port 443
+4. TLS is terminated using Let's Encrypt certificate (managed by cert-manager)
+5. Ingress routes / to frontend-service → taskapp-frontend pods (nginx serving React)
+6. React app makes API calls to /api → ingress routes to backend service → taskapp-backend pods (Flask)
+7. Flask backend connects to postgres-service → postgres-0 StatefulSet pod
+8. Response flows back to user
+
+## Single-Server Assumptions Fixed
+
+| Core Requirement | Single-Server Problem Fixed |
+|-----------------|---------------------------|
+| 2+ backend replicas across nodes | Single server = single point of failure; one crash kills the app |
+| 2+ frontend replicas across nodes | No redundancy; one bad deploy takes the site down |
+| Postgres StatefulSet + PVC | Data lost if container restarts on a single server |
+| Migration as Job | Race condition masked on single server; breaks at 2+ replicas |
+| topologySpreadConstraints | Meaningless on single node; enforces true HA on multi-node |
+| HPA | Single server can't scale horizontally |
+| PodDisruptionBudget | No concept of draining on a single server |
+| Ingress + TLS | Single server typically runs on plain HTTP with no load balancing |
+| GitOps (Argo CD) | Manual deploys don't scale across a cluster |
+| NetworkPolicy | No network isolation on a single server |
+EOF
