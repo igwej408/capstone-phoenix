@@ -52,10 +52,18 @@ resource "aws_security_group" "nodes" {
   description = "Capstone node security group"
   vpc_id      = aws_vpc.main.id
 
-  # SSH - your IP only
+  # SSH - my IP only
   ingress {
     from_port   = 22
     to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.my_ip]
+  }
+
+  # Kubernetes API - my IP only
+  ingress {
+    from_port   = 6443
+    to_port     = 6443
     protocol    = "tcp"
     cidr_blocks = [var.my_ip]
   }

@@ -1,0 +1,17 @@
+---
+- name: Check if k3s agent is already installed
+  stat:
+    path: /usr/local/bin/k3s
+  register: k3s_binary
+
+- name: Get k3s token from control plane
+  slurp:
+    src: /var/lib/rancher/k3s/server/node-token
+  register: node_token
+  delegate_to: "{{ groups['control_plane'][0] }}"
+
+- name: Install k3s agent and join cluster
+  shell: |
+    curl -sfL https://get.k3s.io | K3S_URL=https://10.0.1.136:6443 \
+      K3S_TOKEN={{ node_token.content | b64decode | trim }} sh -s - agent
+  when: not k3s_binary.stat.exists
